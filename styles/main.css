@@ -1,16 +1,87 @@
-/* Transiciones */
-.card {
-    transition: transform 0.3s, box-shadow 0.3s;
+:root {
+    --primary: #2A5C82;  /* Azul profesional */
+    --secondary: #FF6B35; /* Naranja energético */
+    --accent: #00C49A;   /* Verde tecnológico */
+    --dark: #1A1A1A;
+    --light: #F8F9FA;
 }
 
-.card:hover {
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--light);
+}
+
+/* Hero Section Mejorado */
+.hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    padding: 6rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: '';
+    background: url('wave.svg') bottom center no-repeat;
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 100px;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Tarjetas de Servicios Modernas */
+.service-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+.service-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
+.service-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--secondary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
 }
+
+/* Botones Modernos */
+.btn-primary {
+    background: var(--secondary);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+}
+
+/* Sección de Monitoreo Interactivo */
+.monitoring-section {
+    background: url('tech-bg.jpg') center/cover;
+    position: relative;
+    padding: 4rem 0;
+}
+
+.monitoring-overlay {
+    background: rgba(42
