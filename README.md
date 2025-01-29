@@ -1,0 +1,2 @@
+# krafcito
+prototipo monitoreo
