@@ -84,4 +84,16 @@ body {
 }
 
 .monitoring-overlay {
-    background: rgba(42
+    background: rgba(42, 92, 130, 0.9);
+    padding: 4rem 0;
+    color: white;
+}
+
+.stats-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.2);
+}
