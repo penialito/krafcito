@@ -6,6 +6,8 @@
     <title>Energía Revolucionaria</title>
     <link rel="stylesheet" href="styles/bootstrap.min.css">
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Navbar -->
@@ -38,23 +40,67 @@
 
     <!-- Servicios Section -->
     <section id="servicios" class="py-5">
-        <div class="container">
-            <h2 class="text-center mb-4">Nuestros Servicios</h2>
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Generadores Diésel</h5>
-                            <p class="card-text">Soluciones energéticas confiables 24/7</p>
-                        </div>
+    <div class="container">
+        <h2 class="text-center mb-5 display-4 fw-bold">Nuestros Servicios</h2>
+        
+        <div class="row g-4">
+            <!-- Servicio 1 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-bolt fa-2x text-white"></i>
+                    </div>
+                    <h3 class="h4 text-center mb-3">Generadores Diésel</h3>
+                    <p class="text-muted text-center">Soluciones energéticas 24/7 con tecnología de última generación</p>
+                    <div class="text-center mt-4">
+                        <a href="#" class="btn btn-primary">Ver detalles</a>
                     </div>
                 </div>
-                <!-- Repetir para otros servicios -->
             </div>
+
+            <!-- Servicio 2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-chart-line fa-2x text-white"></i>
+                    </div>
+                    <h3 class="h4 text-center mb-3">Monitoreo Inteligente</h3>
+                    <p class="text-muted text-center">Seguimiento en tiempo real desde cualquier dispositivo</p>
+                    <div class="text-center mt-4">
+                        <a href="#" class="btn btn-primary">Demo interactivo</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Más servicios... -->
         </div>
-    </section>
+    </div>
+</section>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="scripts/app.js"></script>
+    
+    <!-- monitoreo -->
+    <section class="monitoring-section">
+    <div class="monitoring-overlay">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <h3 class="display-4 fw-bold">+500</h3>
+                        <p class="mb-0">Equipos monitoreados</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <h3 class="display-4 fw-bold">99.9%</h3>
+                        <p class="mb-0">Disponibilidad</p>
+                    </div>
+                </div>
+                <!-- Más estadísticas... -->
+            </div>
+        </div>
+    </div>
+    </section>
 </body>
 </html>
