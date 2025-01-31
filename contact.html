@@ -1,17 +1,27 @@
-<section class="contact py-5">
+<section id="contacto" class="py-5 bg-light">
     <div class="container">
-        <h2 class="text-center mb-4">Contacto</h2>
-        <form id="contactForm" class="mx-auto" style="max-width: 500px;">
-            <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Nombre" required>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="contact-card p-5 rounded-4 shadow">
+                    <h2 class="text-center mb-4 display-5 fw-bold">Contacto Rápido</h2>
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control form-control-lg" placeholder="Nombre" required>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="email" class="form-control form-control-lg" placeholder="Email" required>
+                            </div>
+                            <div class="col-12">
+                                <textarea class="form-control form-control-lg" rows="4" placeholder="Tu mensaje..." required></textarea>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-gradient btn-lg px-5">Enviar Mensaje</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="mb-3">
-                <input type="email" class="form-control" placeholder="Email" required>
-            </div>
-            <div class="mb-3">
-                <textarea class="form-control" rows="4" placeholder="Mensaje" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Enviar</button>
-        </form>
+        </div>
     </div>
 </section>
