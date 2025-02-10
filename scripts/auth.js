@@ -1,19 +1,32 @@
-import { auth, signInWithEmailAndPassword } from './firebase.js';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient('TU_URL', 'TU_KEY');
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+  e.preventDefault();
+  
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
-    try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        
-        // Redirigir a dashboard (futura fase)
-        window.location.href = '/dashboard.html';
-    } catch (error) {
-        console.error('Error:', error.code);
-        alert('Credenciales incorrectas o error de conexión');
-    }
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    alert('Error de autenticación: ' + error.message);
+    return;
+  }
+
+  // Verificar rol de usuario
+  const { data: userData } = await supabase
+    .from('clientes')
+    .select('*')
+    .eq('email', email)
+    .single();
+
+  if (userData) {
+    sessionStorage.setItem('user', JSON.stringify(userData));
+    window.location.href = 'dashboard.html';
+  }
 });
