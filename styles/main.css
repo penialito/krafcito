@@ -131,3 +131,32 @@ body {
     transform: rotate(15deg) scale(1.1);
     background: var(--accent);
 }
+/* Dashboard Específico */
+.card-header {
+  background: var(--primary) !important;
+  border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+.data-table {
+  --bs-table-bg: rgba(255,255,255,0.8);
+  backdrop-filter: blur(10px);
+}
+
+.metric-card {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::after {
+  content: '';
+  background: rgba(0,0,0,0.1);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
