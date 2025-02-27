@@ -16,37 +16,62 @@
   </nav>
 
   <main class="container py-5">
-    <h1>Bienvenido al Dashboard</h1>
-    <p>Aquí puedes gestionar tus servicios y equipos.</p>
-    <!-- Modificar el main del dashboard -->
-<main class="container py-5">
-  <div class="row">
-    <div class="col-md-8">
-      <h2>Tus Generadores</h2>
-      <div id="generadores-list" class="mt-4"></div>
+    <!-- Agrega esto dentro del <main> -->
+<div class="row">
+  <div class="col-md-6">
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Tus Generadores</h5>
+      </div>
+      <div class="card-body" id="generadores-container">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
     </div>
   </div>
-</main>
+</div>
 
 <script>
   // Función para cargar datos
   const loadGeneradores = async () => {
-    const { data, error } = await supabase
-      .from('generadores')
-      .select('*');
+    const { data: equipos, error } = await supabase
+      .from('equipos')
+      .select(`
+        id,
+        marca_genset,
+        serie_genset,
+        horometro,
+        clientes ( nombre )
+      `)
+      .order('horometro', { ascending: false });
 
+    const container = document.getElementById('generadores-container');
+    
     if (error) {
-      console.error(error);
+      container.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
       return;
     }
 
-    const container = document.getElementById('generadores-list');
-    container.innerHTML = data.map(generator => `
+    if (equipos.length === 0) {
+      container.innerHTML = `<div class="alert alert-info">No hay generadores registrados</div>`;
+      return;
+    }
+
+    container.innerHTML = equipos.map(equipos => `
       <div class="card mb-3">
         <div class="card-body">
-          <h5>${generator.modelo}</h5>
-          <p>Estado: ${generator.estado}</p>
-          <p>Último mantención: ${new Date(generator.ultimo_mantenimiento).toLocaleDateString()}</p>
+          <h5>${equipos.marca_genset}</h5>
+          <p class="mb-1">
+            Estado: 
+            <span class="badge ${equipos.horometro === 'operativo' ? 'bg-success' : 'bg-warning'}">
+              ${equipos.horometro}
+            </span>
+          </p>
+          <p class="mb-1">Cliente: ${equipos.clientes.nombre}</p>
+          <p class="mb-0 text-muted small">
+            Última mant.: ${new Date(equipos.horometro).toLocaleDateString()}
+          </p>
         </div>
       </div>
     `).join('');
@@ -61,24 +86,5 @@
     }
   });
 </script>
-  </main>
-
-  <script src="scripts/auth.js"></script>
-  <script>
-    // Verificar si el usuario está autenticado
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        window.location.href = 'login.html'; // Redirigir si no hay sesión
-      }
-    });
-
-    // Cerrar sesión
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      const { error } = await supabase.auth.signOut();
-      if (!error) {
-        window.location.href = 'login.html';
-      }
-    });
-  </script>
 </body>
 </html>
