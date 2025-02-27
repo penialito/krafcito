@@ -1,41 +1,41 @@
-<section class="container py-5">
-  <div class="row">
-    <!-- Tarjeta de Equipos -->
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header bg-primary text-white">
-          <h5><i class="fas fa-generator me-2"></i>Equipos Registrados</h5>
-        </div>
-        <div class="card-body" id="equipos-list"></div>
-      </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="styles/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">Dashboard</a>
+      <button class="btn btn-danger" id="logoutBtn">Cerrar Sesión</button>
     </div>
-    
-    <!-- Historial de Servicios -->
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-header bg-success text-white">
-          <h5><i class="fas fa-tools me-2"></i>Últimos Servicios</h5>
-        </div>
-        <div class="card-body" id="servicios-list"></div>
-      </div>
-    </div>
-  </div>
-</section>
+  </nav>
 
-<script>
-document.addEventListener('DOMContentLoaded', async () => {
-  const user = JSON.parse(sessionStorage.getItem('user'));
-  
-  // Cargar equipos del cliente
-  const { data: equipos } = await supabase
-    .from('equipos')
-    .select('*')
-    .eq('cliente_id', user.id);
+  <main class="container py-5">
+    <h1>Bienvenido al Dashboard</h1>
+    <p>Aquí puedes gestionar tus servicios y equipos.</p>
+  </main>
 
-  // Cargar servicios relacionados
-  const { data: servicios } = await supabase
-    .from('servicios')
-    .select('*, equipos(*)')
-    .in('equipo_id', equipos.map(e => e.id));
-});
-</script>
+  <script src="scripts/auth.js"></script>
+  <script>
+    // Verificar si el usuario está autenticado
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        window.location.href = 'login.html'; // Redirigir si no hay sesión
+      }
+    });
+
+    // Cerrar sesión
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      const { error } = await supabase.auth.signOut();
+      if (!error) {
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</body>
+</html>
