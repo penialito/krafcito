@@ -33,3 +33,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     alert('Credenciales incorrectas o error de conexión');
   }
 });
+
+// Verificar sesión al cargar la página
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session) {
+    console.log('Usuario autenticado:', session.user.email);
+  } else {
+    console.log('No hay sesión activa');
+  }
+});
