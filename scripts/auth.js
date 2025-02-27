@@ -28,10 +28,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     // Redirigir al dashboard
     window.location.href = 'dashboard.html';
 
-  } catch (error) {
-    console.error('Error en el login:', error.message);
-    alert('Credenciales incorrectas o error de conexión');
-  }
+  } 
+    // Modificar el bloque catch
+    catch (error) {
+      console.error('Error en el login:', error);
+      alert(error.message || 'Error de conexión');
+      document.getElementById('password').value = '';
+}
 });
 
 // Verificar sesión al cargar la página
