@@ -47,6 +47,7 @@
                     marca_genset,
                     serie_genset,
                     horometro,
+                    horas_equipo,
                     clientes ( nombre )
                 `)
                 .order('horometro', { ascending: false });
@@ -69,8 +70,8 @@
                         <h5>${equipo.marca_genset}</h5>
                         <p class="mb-1">
                             Estado: 
-                            <span class="badge ${equipo.horometro ? 'bg-success' : 'bg-warning'}">
-                                ${equipo.horometro ? 'Operativo' : 'No operativo'}
+                            <span class="badge ${equipo.horas_equipo >= 1000 ? 'bg-warning' : 'bg-success'}">
+                                ${equipo.horas_equipo >= 1000 ? 'Requiere mant.' : 'Operativo'}
                             </span>
                         </p>
                         <p class="mb-1">Cliente: ${equipo.clientes?.nombre || 'Sin cliente asignado'}</p>
