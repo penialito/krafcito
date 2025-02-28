@@ -7,11 +7,11 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="styles/bootstrap.min.css">
     <link rel="stylesheet" href="styles/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+
 </head>
 
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
-    <script src="scripts/auth.js"></script>
 
     <nav class="navbar navbar-dark bg-dark">
         <div class="container">
@@ -40,6 +40,8 @@
     <script>
         // Function to load data
         const loadGeneradores = async () => {
+            const supabase = window.supabase;
+
             const { data: equipos, error } = await supabase
                 .from('equipos')
                 .select(`
@@ -81,6 +83,7 @@
         };
 
         // Verify session and load data
+        const supabase = window.supabase;
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
                 loadGeneradores();
