@@ -1,7 +1,7 @@
 // scripts/auth.js
 
 const initializeSupabase = async () => {
-    const { createClient } = Supabase; // Import createClient
+    const { createClient } = supabase; // Import createClient
     const supabaseUrl = 'https://gztsbqbqmesfrvywpyhl.supabase.co';
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6dHNicWJxbWVzZnJ2eXdweWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyMDg3NDUsImV4cCI6MjA1NDc4NDc0NX0.EmRDO3s64iYw1k3OY5W44twraLnJHy6bQh3HKTtx-wI';
     return createClient(supabaseUrl, supabaseAnonKey);
