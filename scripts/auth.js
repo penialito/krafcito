@@ -38,4 +38,3 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
         document.getElementById('password').value = '';
     }
 });
-
