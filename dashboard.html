@@ -1,93 +1,93 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard</title>
-  <link rel="stylesheet" href="styles/bootstrap.min.css">
-  <link rel="stylesheet" href="styles/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    <link rel="stylesheet" href="styles/main.css">
 </head>
+
 <body>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
-  <script src="scripts/auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+    <script src="scripts/auth.js"></script>
 
-  <nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="#">Dashboard</a>
-      <button class="btn btn-danger" id="logoutBtn">Cerrar Sesión</button>
-    </div>
-  </nav>
-
-  <main class="container py-5">
-    <!-- Agrega esto dentro del <main> -->
-<div class="row">
-  <div class="col-md-6">
-    <div class="card mb-4">
-      <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">Tus Generadores</h5>
-      </div>
-      <div class="card-body" id="generadores-container">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando...</span>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Dashboard</a>
+            <button class="btn btn-danger" id="logoutBtn">Cerrar Sesión</button>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+    </nav>
 
-<script>
-  // Función para cargar datos
-  const loadGeneradores = async () => {
-    const { data: equipos, error } = await supabase
-      .from('equipos')
-      .select(`
-        id,
-        marca_genset,
-        serie_genset,
-        horometro,
-        clientes ( nombre )
-      `)
-      .order('horometro', { ascending: false });
-
-    const container = document.getElementById('generadores-container');
-    
-    if (error) {
-      container.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
-      return;
-    }
-
-    if (equipos.length === 0) {
-      container.innerHTML = `<div class="alert alert-info">No hay generadores registrados</div>`;
-      return;
-    }
-
-    container.innerHTML = equipos.map(equipos => `
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5>${equipos.marca_genset}</h5>
-          <p class="mb-1">
-            Estado: 
-            <span class="badge ${equipos.horometro === 'operativo' ? 'bg-success' : 'bg-warning'}">
-              ${equipos.horometro}
-            </span>
-          </p>
-          <p class="mb-1">Cliente: ${equipos.clientes.nombre}</p>
-          <p class="mb-0 text-muted small">
-            Última mant.: ${new Date(equipos.horometro).toLocaleDateString()}
-          </p>
+    <main class="container py-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Tus Generadores</h5>
+                    </div>
+                    <div class="card-body" id="generadores-container">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    `).join('');
-  };
+    </main>
 
-  // Verificar sesión y cargar datos
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session) {
-      loadGeneradores();
-    } else {
-      window.location.href = 'login.html';
-    }
-  });
-</script>
+    <script>
+        // Function to load data
+        const loadGeneradores = async () => {
+            const { data: equipos, error } = await supabase
+                .from('equipos')
+                .select(`
+                    id,
+                    marca_genset,
+                    serie_genset,
+                    horometro,
+                    clientes ( nombre )
+                `)
+                .order('horometro', { ascending: false });
+
+            const container = document.getElementById('generadores-container');
+
+            if (error) {
+                container.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+                return;
+            }
+
+            if (!equipos || equipos.length === 0) {
+                container.innerHTML = `<div class="alert alert-info">No hay generadores registrados</div>`;
+                return;
+            }
+
+            container.innerHTML = equipos.map(equipo => `
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5>${equipo.marca_genset}</h5>
+                        <p class="mb-1">
+                            Estado: 
+                            <span class="badge ${equipo.horometro ? 'bg-success' : 'bg-warning'}">
+                                ${equipo.horometro ? 'Operativo' : 'No operativo'}
+                            </span>
+                        </p>
+                        <p class="mb-1">Cliente: ${equipo.clientes?.nombre || 'Sin cliente asignado'}</p>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        // Verify session and load data
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                loadGeneradores();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
 </body>
+
 </html>
