@@ -170,6 +170,14 @@ body {
     animation: float 4s ease-in-out infinite;
 }
 
+/* contact page styles */
+.contact-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 /* Login Page Styles */
 .login-card {
     background-color: white;
@@ -188,10 +196,21 @@ body {
     margin: 0 auto;
 }
 
-/* contact page styles */
-.contact-card {
-    background: white;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+.login-card .form-control {
+    border: 1px solid #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.login-card .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(42, 92, 130, 0.25);
+}
+
+.login-card .btn-gradient {
+    border: none;
+}
+
+.login-card .btn-gradient:hover{
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(42, 92, 130, 0.3);
 }
