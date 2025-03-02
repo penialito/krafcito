@@ -7,98 +7,391 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="styles/bootstrap.min.css">
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 
 <body>
-
     <nav class="navbar navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Dashboard</a>
-            <button class="btn btn-danger" id="logoutBtn">Cerrar Sesión</button>
+            <a class="navbar-brand" href="#">
+                <img src="images/pogo.png" alt="Logo" height="30" class="me-2">
+                Dashboard
+            </a>
+            <div>
+                <span class="navbar-text me-3" id="userRoleDisplay">
+                    <i class="fas fa-user me-1"></i> Cargando...
+                </span>
+                <button class="btn btn-danger" id="logoutBtn"><i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión</button>
+            </div>
         </div>
     </nav>
 
-    <main class="container py-5">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Tus Generadores</h5>
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar py-3">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#equipos-tab" data-bs-toggle="tab">
+                                <i class="fas fa-server me-2"></i> Equipos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#mantenimientos-tab" data-bs-toggle="tab">
+                                <i class="fas fa-tools me-2"></i> Mantenimientos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#estadisticas-tab" data-bs-toggle="tab">
+                                <i class="fas fa-chart-line me-2"></i> Estadísticas
+                            </a>
+                        </li>
+                        <li class="nav-item" id="usuarios-nav-item" style="display: none;">
+                            <a class="nav-link" href="#usuarios-tab" data-bs-toggle="tab">
+                                <i class="fas fa-users me-2"></i> Usuarios
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <div class="tab-content">
+                    <!-- Equipos Tab -->
+                    <div class="tab-pane fade show active" id="equipos-tab">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Generadores</h1>
+                            <div class="btn-toolbar mb-2 mb-md-0">
+                                <div class="input-group me-2">
+                                    <input type="text" class="form-control" id="equipos-search" placeholder="Buscar generador...">
+                                    <button class="btn btn-outline-secondary" type="button" id="equipos-search-btn">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                        <i class="fas fa-sort me-1"></i> Ordenar
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="#" data-sort="horometro-asc">Horómetro ↑</a></li>
+                                        <li><a class="dropdown-item" href="#" data-sort="horometro-desc">Horómetro ↓</a></li>
+                                        <li><a class="dropdown-item" href="#" data-sort="marca-asc">Marca A-Z</a></li>
+                                        <li><a class="dropdown-item" href="#" data-sort="marca-desc">Marca Z-A</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Equipos Filter Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-primary text-white h-100">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fas fa-server fa-2x me-3"></i>
+                                        <div>
+                                            <h5 class="card-title mb-0">Total</h5>
+                                            <h2 id="total-equipos">0</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-success text-white h-100">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fas fa-check-circle fa-2x me-3"></i>
+                                        <div>
+                                            <h5 class="card-title mb-0">Operativos</h5>
+                                            <h2 id="equipos-operativos">0</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-warning text-white h-100">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                                        <div>
+                                            <h5 class="card-title mb-0">Alerta</h5>
+                                            <h2 id="equipos-alerta">0</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="card bg-danger text-white h-100">
+                                    <div class="card-body d-flex align-items-center">
+                                        <i class="fas fa-times-circle fa-2x me-3"></i>
+                                        <div>
+                                            <h5 class="card-title mb-0">Críticos</h5>
+                                            <h2 id="equipos-criticos">0</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Equipos List -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Lista de Generadores</h5>
+                            </div>
+                            <div class="card-body" id="generadores-container">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body" id="generadores-container">
+
+                    <!-- Mantenimientos Tab -->
+                    <div class="tab-pane fade" id="mantenimientos-tab">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Programa de Mantenimientos</h1>
+                            <div class="btn-toolbar mb-2 mb-md-0">
+                                <button class="btn btn-primary" id="nuevo-mantenimiento">
+                                    <i class="fas fa-plus me-1"></i> Nuevo Mantenimiento
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Calendario de mantenimientos -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Calendario de Mantenimientos</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <div class="input-group">
+                                            <span class="input-group-text">Filtrar por mes</span>
+                                            <input type="month" class="form-control" id="filtro-mes">
+                                            <button class="btn btn-outline-secondary" type="button" id="aplicar-filtro">Aplicar</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="mostrar-completados" checked>
+                                            <label class="form-check-label" for="mostrar-completados">Mostrar completados</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="mostrar-pendientes" checked>
+                                            <label class="form-check-label" for="mostrar-pendientes">Mostrar pendientes</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Equipo</th>
+                                                <th>Cliente</th>
+                                                <th>Tipo</th>
+                                                <th>Estado</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="mantenimientos-lista">
+                                            <tr>
+                                                <td colspan="6" class="text-center">Cargando mantenimientos...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadisticas Tab -->
+                    <div class="tab-pane fade" id="estadisticas-tab">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Estadísticas de Rendimiento</h1>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Horas de operación por mes</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="horasChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Mantenimientos por tipo</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="mantenimientosChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Generadores que requieren atención</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Equipo</th>
+                                                        <th>Cliente</th>
+                                                        <th>Horómetro</th>
+                                                        <th>Horas hasta mantenimiento</th>
+                                                        <th>Estado</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="equipos-atencion">
+                                                    <tr>
+                                                        <td colspan="5" class="text-center">Cargando datos...</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Usuarios Tab (Solo visible para admins) -->
+                    <div class="tab-pane fade" id="usuarios-tab">
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Gestión de Usuarios</h1>
+                            <div class="btn-toolbar mb-2 mb-md-0">
+                                <button class="btn btn-primary" id="nuevo-usuario">
+                                    <i class="fas fa-user-plus me-1"></i> Nuevo Usuario
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Usuarios del Sistema</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Nombre</th>
+                                                <th>Email</th>
+                                                <th>Rol</th>
+                                                <th>Estado</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="usuarios-lista">
+                                            <tr>
+                                                <td colspan="5" class="text-center">Cargando usuarios...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para detalles de equipo -->
+    <div class="modal fade" id="equipoDetalleModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="equipoDetalleModalTitle">Detalles del Generador</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="equipoDetalleBody">
+                    <div class="d-flex justify-content-center">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Cargando...</span>
                         </div>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="programarMantenimientoBtn">Programar Mantenimiento</button>
+                </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <script>
-        const initializeSupabase = async () => {
-            const { createClient } = supabase; // Import createClient
-            const supabaseUrl = 'https://gztsbqbqmesfrvywpyhl.supabase.co';
-            const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6dHNicWJxbWVzZnJ2eXdweWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyMDg3NDUsImV4cCI6MjA1NDc4NDc0NX0.EmRDO3s64iYw1k3OY5W44twraLnJHy6bQh3HKTtx-wI';
-            return createClient(supabaseUrl, supabaseAnonKey);
-        };
-        // Function to load data
-        const loadGeneradores = async () => {
-            const supabase = await initializeSupabase();
-
-            const { data: equipos, error } = await supabase
-                .from('equipos')
-                .select(`
-                    id,
-                    marca_genset,
-                    serie_genset,
-                    horometro,
-                    horas_equipo,
-                    clientes ( nombre )
-                `)
-                .order('horometro', { ascending: false });
-
-            const container = document.getElementById('generadores-container');
-
-            if (error) {
-                container.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
-                return;
-            }
-
-            if (!equipos || equipos.length === 0) {
-                container.innerHTML = `<div class="alert alert-info">No hay generadores registrados</div>`;
-                return;
-            }
-
-            container.innerHTML = equipos.map(equipo => `
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5>${equipo.marca_genset}</h5>
-                        <p class="mb-1">
-                            Estado: 
-                            <span class="badge ${equipo.horas_equipo >= 1000 ? 'bg-warning' : 'bg-success'}">
-                                ${equipo.horas_equipo >= 1000 ? 'Requiere mant.' : 'Operativo'}
-                            </span>
-                        </p>
-                        <p class="mb-1">Cliente: ${equipo.clientes?.nombre || 'Sin cliente asignado'}</p>
-                    </div>
+    <!-- Modal para nuevo mantenimiento -->
+    <div class="modal fade" id="nuevoMantenimientoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Programar Mantenimiento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            `).join('');
-        };
+                <div class="modal-body">
+                    <form id="nuevoMantenimientoForm">
+                        <div class="mb-3">
+                            <label for="mantenimiento-equipo" class="form-label">Equipo</label>
+                            <select class="form-select" id="mantenimiento-equipo" required>
+                                <option value="">Seleccionar equipo...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mantenimiento-tipo" class="form-label">Tipo de Mantenimiento</label>
+                            <select class="form-select" id="mantenimiento-tipo" required>
+                                <option value="Preventivo">Preventivo</option>
+                                <option value="Correctivo">Correctivo</option>
+                                <option value="Predictivo">Predictivo</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mantenimiento-fecha" class="form-label">Fecha Programada</label>
+                            <input type="date" class="form-control" id="mantenimiento-fecha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mantenimiento-descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="mantenimiento-descripcion" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="guardarMantenimientoBtn">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Verify session and load data
-        (async () => {
-            const supabase = await initializeSupabase();
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                loadGeneradores();
-            } else {
-                window.location.href = 'login.html';
-            }
-        })();
-    </script>
+    <!-- Toast notification system -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notificación</strong>
+                <small id="toastTime">Ahora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Hello, world! This is a toast message.
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="scripts/dashboard.js"></script>
 </body>
 
 </html>
