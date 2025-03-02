@@ -19,9 +19,6 @@ async function checkAuth() {
         } else if (profileError) {
             console.error('Error getting user role:', profileError);
         }
-        if (userRole === 'admin') {
-            document.getElementById('usuarios-nav-item').style.display = 'block';
-        }
         const userRoleDisplay = document.getElementById('userRoleDisplay');
         if (userRoleDisplay) {
             userRoleDisplay.textContent = `${userRole.toUpperCase()}: ${user.email}`;
