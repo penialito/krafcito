@@ -1,41 +1,31 @@
-// scripts/auth.js
+// Fix Supabase initialization in auth.js
 
 const initializeSupabase = async () => {
-    const { createClient } = supabase; // Import createClient
-    const supabaseUrl = 'https://gztsbqbqmesfrvywpyhl.supabase.co';
-    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6dHNicWJxbWVzZnJ2eXdweWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyMDg3NDUsImV4cCI6MjA1NDc4NDc0NX0.EmRDO3s64iYw1k3OY5W44twraLnJHy6bQh3HKTtx-wI';
-    return createClient(supabaseUrl, supabaseAnonKey);
-};
-
-const loginForm = document.getElementById('loginForm');
-
-loginForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const supabase = await initializeSupabase();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
     try {
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-
+        // Check if supabase is available
+        if (typeof supabase === 'undefined' || !supabase.createClient) {
+            console.error('Supabase library not loaded properly');
+            throw new Error('Error de conexión: Biblioteca Supabase no disponible');
+        }
+        
+        const supabaseUrl = 'https://gztsbqbqmesfrvywpyhl.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6dHNicWJxbWVzZnJ2eXdweWhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkyMDg3NDUsImV4cCI6MjA1NDc4NDc0NX0.EmRDO3s64iYw1k3OY5W44twraLnJHy6bQh3HKTtx-wI';
+        
+        const client = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        
+        // Test the connection
+        const { error } = await client.auth.getSession();
         if (error) {
             throw error;
         }
-
-        // Check if the user is signed in
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            // Redirect immediately after successful login
-            window.location.href = 'dashboard.html';
-        } else {
-            throw new Error('Autenticación fallida');
-        }
+        
+        return client;
     } catch (error) {
-        console.error('Error:', error);
-        alert(error.message || 'Error desconocido');
-        document.getElementById('password').value = '';
+        console.error('Failed to initialize Supabase:', error);
+        // Show error alert if we're on the login page
+        if (window.location.pathname.includes('login.html')) {
+            alert(`Error de conexión: ${error.message || 'No se pudo conectar a la base de datos'}`);
+        }
+        throw error;
     }
-});
+};
