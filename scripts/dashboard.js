@@ -1,7 +1,7 @@
 async function checkAuth() {
     try {
         // Use the globally available initializeSupabase function
-        supabaseClient = await window.initializeSupabase();
+        const supabaseClient = await window.initializeSupabase();
         
         const { data, error } = await supabaseClient.auth.getSession();
         
@@ -16,7 +16,7 @@ async function checkAuth() {
         }
         
         // Store current user for later use
-        currentUser = data.session.user;
+        const currentUser = data.session.user;
         
         // Get user role from the profiles table
         const { data: profileData, error: profileError } = await supabaseClient
@@ -54,6 +54,7 @@ async function checkAuth() {
 
 async function loadEquipos() {
     try {
+        const supabaseClient = await window.initializeSupabase();
         const { data: equipos, error } = await supabaseClient
             .from('equipos')
             .select(`
@@ -190,6 +191,7 @@ function setupEventListeners() {
     // Logout button
     document.getElementById('logoutBtn').addEventListener('click', async () => {
         try {
+            const supabaseClient = await window.initializeSupabase();
             await supabaseClient.auth.signOut();
             window.location.href = 'login.html';
         } catch (error) {
@@ -240,4 +242,3 @@ function showToast(title, message, type = 'info') {
     const toast = new bootstrap.Toast(toastEl);
     toast.show();
 }
-
