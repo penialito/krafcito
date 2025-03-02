@@ -1,8 +1,6 @@
 async function checkAuth() {
     try {
-        // Use the globally available initializeSupabase function
         const supabaseClient = await window.initializeSupabase();
-        
         const { data, error } = await supabaseClient.auth.getSession();
         
         if (error) {
@@ -15,7 +13,6 @@ async function checkAuth() {
             return false;
         }
         
-        // Store current user for later use
         const currentUser = data.session.user;
         
         // Get user role from the profiles table
@@ -25,9 +22,9 @@ async function checkAuth() {
             .eq('user_id', currentUser.id)
             .single();
             
+        let userRole = 'assistant';
         if (profileError) {
             console.error('Error getting user role:', profileError);
-            userRole = 'assistant'; // Default role
         } else {
             userRole = profileData?.role || 'assistant';
         }
@@ -37,7 +34,7 @@ async function checkAuth() {
             document.getElementById('usuarios-nav-item').style.display = 'block';
         }
         
-        // Show user info in header
+        // Use proper template literal syntax here:
         const userRoleDisplay = document.getElementById('userRoleDisplay');
         if (userRoleDisplay) {
             userRoleDisplay.textContent = `${userRole.toUpperCase()}: ${currentUser.email}`;
@@ -46,7 +43,6 @@ async function checkAuth() {
         return true;
     } catch (error) {
         console.error('Auth error:', error);
-        // Handle error gracefully
         window.location.href = 'login.html?error=' + encodeURIComponent(error.message || 'Error de autenticación');
         return false;
     }
@@ -57,17 +53,8 @@ async function loadEquipos() {
         const supabaseClient = await window.initializeSupabase();
         const { data: equipos, error } = await supabaseClient
             .from('equipos')
-            .select(`
-                id,
-                nombre_interno,
-                marca_genset,
-                modelo_genset,
-                serie_genset,
-                horometro,
-                potencia_kw,
-                cliente_id,
-                clientes(nombre, rut)
-            `)
+            // Pass the list of fields as a single string:
+            .select('id, nombre_interno, marca_genset, modelo_genset, serie_genset, horometro, potencia_kw, cliente_id, clientes(nombre, rut)')
             .order('id', { ascending: true });
             
         if (error) throw error;
@@ -75,13 +62,8 @@ async function loadEquipos() {
         // Update counters
         document.getElementById('total-equipos').textContent = equipos.length;
         
-        // Simple logic for operational status (you can adjust this)
-        let operativos = 0;
-        let alertas = 0;
-        let criticos = 0;
-        
+        let operativos = 0, alertas = 0, criticos = 0;
         equipos.forEach(equipo => {
-            // This is just an example - adjust based on your business logic.
             if (equipo.horometro < 400) {
                 operativos++;
             } else if (equipo.horometro < 600) {
@@ -115,10 +97,8 @@ function displayEquipos(equipos) {
     let html = '<div class="row">';
     
     equipos.forEach(equipo => {
-        // Determine status class
         let statusClass = 'bg-success';
         let statusText = 'Operativo';
-        
         if (equipo.horometro > 600) {
             statusClass = 'bg-danger';
             statusText = 'Crítico';
@@ -127,6 +107,7 @@ function displayEquipos(equipos) {
             statusText = 'Alerta';
         }
         
+        // Use backticks to create a template literal for the HTML:
         html += `
             <div class="col-md-4 mb-4">
                 <div class="card equipment-card">
@@ -154,7 +135,6 @@ function displayEquipos(equipos) {
     html += '</div>';
     container.innerHTML = html;
 }
-
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async function() {
     try {
