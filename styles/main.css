@@ -1,10 +1,7 @@
 :root {
     --primary: #2A5C82;
-    /* Azul profesional */
     --secondary: #FF6B35;
-    /* Naranja energético */
     --accent: #00C49A;
-    /* Verde tecnológico */
     --dark: #1A1A1A;
     --light: #F8F9FA;
     --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
@@ -214,8 +211,6 @@ body {
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(42, 92, 130, 0.3);
 }
-
-/* Add these to your main.css file */
 
 /* Equipment cards styling */
 .equipment-card {
