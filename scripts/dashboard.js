@@ -114,6 +114,157 @@ function displayEquipos(equipos) {
     `;
 }
 
+// Load mantenimientos data and update the table
+async function loadMantenimientos() {
+    try {
+        const client = await window.initializeSupabase();
+        const { data: mantenimientos, error } = await client
+            .from('servicios')
+            .select('id, equipo_id, tipo_servicio, fecha_servicio, mantenimiento_horas, estado, equipos(nombre_interno), clientes(nombre)')
+            .order('fecha_servicio', { ascending: false });
+        if (error) throw error;
+
+        displayMantenimientos(mantenimientos);
+    } catch (err) {
+        console.error('Error loading mantenimientos:', err);
+        showToast('Error', `No se pudieron cargar los mantenimientos: ${err.message}`, 'error');
+    }
+}
+
+// Render mantenimientos in the table
+function displayMantenimientos(mantenimientos) {
+    const container = document.getElementById('mantenimientos-lista');
+    if (!mantenimientos.length) {
+        container.innerHTML = '<tr><td colspan="6" class="text-center">No hay mantenimientos registrados.</td></tr>';
+        return;
+    }
+    container.innerHTML = mantenimientos
+        .map(mantenimiento => {
+            return `
+                <tr>
+                    <td>${new Date(mantenimiento.fecha_servicio).toLocaleDateString()}</td>
+                    <td>${mantenimiento.equipos.nombre_interno}</td>
+                    <td>${mantenimiento.clientes.nombre}</td>
+                    <td>${mantenimiento.tipo_servicio}</td>
+                    <td>${mantenimiento.estado}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="verDetalleMantenimiento(${mantenimiento.id})">
+                            <i class="fas fa-eye me-1"></i> Ver Detalles
+                        </button>
+                    </td>
+                </tr>
+            `;
+        })
+        .join('');
+}
+
+// Load estadísticas data and update the charts
+async function loadEstadisticas() {
+    try {
+        const client = await window.initializeSupabase();
+        const { data: estadisticas, error } = await client
+            .from('estadisticas')
+            .select('*');
+        if (error) throw error;
+
+        // Assume estadisticas contains data for charts
+        updateCharts(estadisticas);
+    } catch (err) {
+        console.error('Error loading estadísticas:', err);
+        showToast('Error', `No se pudieron cargar las estadísticas: ${err.message}`, 'error');
+    }
+}
+
+// Update charts with estadisticas data
+function updateCharts(estadisticas) {
+    // Example: Update horasChart and mantenimientosChart with estadisticas data
+    const horasChartCtx = document.getElementById('horasChart').getContext('2d');
+    const mantenimientosChartCtx = document.getElementById('mantenimientosChart').getContext('2d');
+
+    new Chart(horasChartCtx, {
+        type: 'bar',
+        data: {
+            labels: estadisticas.horas.labels,
+            datasets: [{
+                label: 'Horas',
+                data: estadisticas.horas.data,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    new Chart(mantenimientosChartCtx, {
+        type: 'line',
+        data: {
+            labels: estadisticas.mantenimientos.labels,
+            datasets: [{
+                label: 'Mantenimientos',
+                data: estadisticas.mantenimientos.data,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// Load equipos details and show in modal
+async function verDetalleEquipo(equipoId) {
+    try {
+        const client = await window.initializeSupabase();
+        const { data: equipo, error } = await client
+            .from('equipos')
+            .select('*, clientes(*), servicios(*)')
+            .eq('id', equipoId)
+            .single();
+        if (error) throw error;
+
+        displayEquipoDetalle(equipo);
+    } catch (err) {
+        console.error('Error loading equipo details:', err);
+        showToast('Error', `No se pudieron cargar los detalles del equipo: ${err.message}`, 'error');
+    }
+}
+
+// Render equipo details in the modal
+function displayEquipoDetalle(equipo) {
+    const modalTitle = document.getElementById('equipoDetalleModalTitle');
+    const modalBody = document.getElementById('equipoDetalleBody');
+
+    modalTitle.textContent = equipo.nombre_interno || equipo.serie_genset;
+    modalBody.innerHTML = `
+        <p><strong>Cliente:</strong> ${equipo.clientes.nombre} (${equipo.clientes.rut})</p>
+        <p><strong>Marca:</strong> ${equipo.marca_genset || 'N/A'}</p>
+        <p><strong>Modelo:</strong> ${equipo.modelo_genset || 'N/A'}</p>
+        <p><strong>Serie:</strong> ${equipo.serie_genset || 'N/A'}</p>
+        <p><strong>Horómetro:</strong> ${equipo.horometro || 0} hrs</p>
+        <p><strong>Potencia:</strong> ${equipo.potencia_kw || 0} kW</p>
+        <p><strong>Servicios:</strong></p>
+        <ul>
+            ${equipo.servicios.map(servicio => `<li>${servicio.tipo_servicio} - ${new Date(servicio.fecha_servicio).toLocaleDateString()}</li>`).join('')}
+        </ul>
+    `;
+
+    const equipoDetalleModal = new bootstrap.Modal(document.getElementById('equipoDetalleModal'));
+    equipoDetalleModal.show();
+}
+
 // Initialize the dashboard application
 document.addEventListener('DOMContentLoaded', async () => {
     const loadingIndicator = document.getElementById('loadingIndicator');
