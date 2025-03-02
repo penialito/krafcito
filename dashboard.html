@@ -1,404 +1,388 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="styles/bootstrap.min.css">
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="scripts/auth.js" defer></script>
-    <script src="scripts/main.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="styles/bootstrap.min.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <script src="scripts/auth.js" defer></script>
+  <script src="scripts/main.js" defer></script>
 </head>
-
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="images/pogo.png" alt="Logo" height="30" class="me-2">
-                Dashboard
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="images/pogo.png" alt="Logo" height="30" class="me-2"> Dashboard
+      </a>
+      <div>
+        <span id="userRoleDisplay" class="navbar-text me-3">
+          <i class="fas fa-user me-1"></i> Cargando...
+        </span>
+        <button id="logoutBtn" class="btn btn-danger">
+          <i class="fas fa-sign-out-alt me-1"></i> Salir
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-3 col-lg-2 bg-light sidebar py-3">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a href="#equipos-tab" data-bs-toggle="tab" class="nav-link active">
+              <i class="fas fa-server me-2"></i> Equipos
             </a>
-            <div>
-                <span class="navbar-text me-3" id="userRoleDisplay">
-                    <i class="fas fa-user me-1"></i> Cargando...
-                </span>
-                <button class="btn btn-danger" id="logoutBtn"><i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión</button>
+          </li>
+          <li class="nav-item">
+            <a href="#mantenimientos-tab" data-bs-toggle="tab" class="nav-link">
+              <i class="fas fa-tools me-2"></i> Mantenimientos
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#estadisticas-tab" data-bs-toggle="tab" class="nav-link">
+              <i class="fas fa-chart-line me-2"></i> Estadísticas
+            </a>
+          </li>
+          <li class="nav-item" id="usuarios-nav-item" style="display: none;">
+            <a href="#usuarios-tab" data-bs-toggle="tab" class="nav-link">
+              <i class="fas fa-users me-2"></i> Usuarios
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+        <div class="tab-content">
+          <!-- Equipos -->
+          <div class="tab-pane fade show active" id="equipos-tab">
+            <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+              <h1 class="h2">Generadores</h1>
+              <div class="btn-toolbar">
+                <div class="input-group me-2">
+                  <input type="text" id="equipos-search" class="form-control" placeholder="Buscar...">
+                  <button id="equipos-search-btn" class="btn btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-sort me-1"></i> Ordenar
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" data-sort="horometro-asc">Horómetro ↑</a></li>
+                    <li><a class="dropdown-item" href="#" data-sort="horometro-desc">Horómetro ↓</a></li>
+                    <li><a class="dropdown-item" href="#" data-sort="marca-asc">Marca A-Z</a></li>
+                    <li><a class="dropdown-item" href="#" data-sort="marca-desc">Marca Z-A</a></li>
+                  </ul>
+                </div>
+              </div>
             </div>
-        </div>
-    </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar py-3">
-                <div class="sidebar-sticky">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#equipos-tab" data-bs-toggle="tab">
-                                <i class="fas fa-server me-2"></i> Equipos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#mantenimientos-tab" data-bs-toggle="tab">
-                                <i class="fas fa-tools me-2"></i> Mantenimientos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#estadisticas-tab" data-bs-toggle="tab">
-                                <i class="fas fa-chart-line me-2"></i> Estadísticas
-                            </a>
-                        </li>
-                        <li class="nav-item" id="usuarios-nav-item" style="display: none;">
-                            <a class="nav-link" href="#usuarios-tab" data-bs-toggle="tab">
-                                <i class="fas fa-users me-2"></i> Usuarios
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <div class="tab-content">
-                    <!-- Equipos Tab -->
-                    <div class="tab-pane fade show active" id="equipos-tab">
-                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                            <h1 class="h2">Generadores</h1>
-                            <div class="btn-toolbar mb-2 mb-md-0">
-                                <div class="input-group me-2">
-                                    <input type="text" class="form-control" id="equipos-search" placeholder="Buscar generador...">
-                                    <button class="btn btn-outline-secondary" type="button" id="equipos-search-btn">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                </div>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i class="fas fa-sort me-1"></i> Ordenar
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#" data-sort="horometro-asc">Horómetro ↑</a></li>
-                                        <li><a class="dropdown-item" href="#" data-sort="horometro-desc">Horómetro ↓</a></li>
-                                        <li><a class="dropdown-item" href="#" data-sort="marca-asc">Marca A-Z</a></li>
-                                        <li><a class="dropdown-item" href="#" data-sort="marca-desc">Marca Z-A</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Equipos Filter Cards -->
-                        <div class="row mb-4">
-                            <div class="col-md-3 mb-3">
-                                <div class="card bg-primary text-white h-100">
-                                    <div class="card-body d-flex align-items-center">
-                                        <i class="fas fa-server fa-2x me-3"></i>
-                                        <div>
-                                            <h5 class="card-title mb-0">Total</h5>
-                                            <h2 id="total-equipos">0</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card bg-success text-white h-100">
-                                    <div class="card-body d-flex align-items-center">
-                                        <i class="fas fa-check-circle fa-2x me-3"></i>
-                                        <div>
-                                            <h5 class="card-title mb-0">Operativos</h5>
-                                            <h2 id="equipos-operativos">0</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card bg-warning text-white h-100">
-                                    <div class="card-body d-flex align-items-center">
-                                        <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
-                                        <div>
-                                            <h5 class="card-title mb-0">Alerta</h5>
-                                            <h2 id="equipos-alerta">0</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <div class="card bg-danger text-white h-100">
-                                    <div class="card-body d-flex align-items-center">
-                                        <i class="fas fa-times-circle fa-2x me-3"></i>
-                                        <div>
-                                            <h5 class="card-title mb-0">Críticos</h5>
-                                            <h2 id="equipos-criticos">0</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Equipos List -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0">Lista de Generadores</h5>
-                            </div>
-                            <div class="card-body" id="generadores-container">
-                                <div class="d-flex justify-content-center">
-                                    <div class="spinner-border text-primary" role="status">
-                                        <span class="visually-hidden">Cargando...</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <div class="row mb-4">
+              <div class="col-md-3 mb-3">
+                <div class="card bg-primary text-white h-100">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-server fa-2x me-3"></i>
+                    <div>
+                      <h5 class="card-title mb-0">Total</h5>
+                      <h2 id="total-equipos">0</h2>
                     </div>
-
-                    <!-- Mantenimientos Tab -->
-                    <div class="tab-pane fade" id="mantenimientos-tab">
-                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                            <h1 class="h2">Programa de Mantenimientos</h1>
-                            <div class="btn-toolbar mb-2 mb-md-0">
-                                <button class="btn btn-primary" id="nuevo-mantenimiento">
-                                    <i class="fas fa-plus me-1"></i> Nuevo Mantenimiento
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Calendario de mantenimientos -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0">Calendario de Mantenimientos</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <div class="input-group">
-                                            <span class="input-group-text">Filtrar por mes</span>
-                                            <input type="month" class="form-control" id="filtro-mes">
-                                            <button class="btn btn-outline-secondary" type="button" id="aplicar-filtro">Aplicar</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" id="mostrar-completados" checked>
-                                            <label class="form-check-label" for="mostrar-completados">Mostrar completados</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" id="mostrar-pendientes" checked>
-                                            <label class="form-check-label" for="mostrar-pendientes">Mostrar pendientes</label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Fecha</th>
-                                                <th>Equipo</th>
-                                                <th>Cliente</th>
-                                                <th>Tipo</th>
-                                                <th>Estado</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="mantenimientos-lista">
-                                            <tr>
-                                                <td colspan="6" class="text-center">Cargando mantenimientos...</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Estadisticas Tab -->
-                    <div class="tab-pane fade" id="estadisticas-tab">
-                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                            <h1 class="h2">Estadísticas de Rendimiento</h1>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0">Horas de operación por mes</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <canvas id="horasChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0">Mantenimientos por tipo</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <canvas id="mantenimientosChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-12 mb-4">
-                                <div class="card">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0">Generadores que requieren atención</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Equipo</th>
-                                                        <th>Cliente</th>
-                                                        <th>Horómetro</th>
-                                                        <th>Horas hasta mantenimiento</th>
-                                                        <th>Estado</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="equipos-atencion">
-                                                    <tr>
-                                                        <td colspan="5" class="text-center">Cargando datos...</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Usuarios Tab (Solo visible para admins) -->
-                    <div class="tab-pane fade" id="usuarios-tab">
-                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                            <h1 class="h2">Gestión de Usuarios</h1>
-                            <div class="btn-toolbar mb-2 mb-md-0">
-                                <button class="btn btn-primary" id="nuevo-usuario">
-                                    <i class="fas fa-user-plus me-1"></i> Nuevo Usuario
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="card mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0">Usuarios del Sistema</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Nombre</th>
-                                                <th>Email</th>
-                                                <th>Rol</th>
-                                                <th>Estado</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="usuarios-lista">
-                                            <tr>
-                                                <td colspan="5" class="text-center">Cargando usuarios...</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  </div>
                 </div>
-            </main>
-        </div>
-    </div>
-
-    <!-- Modal para detalles de equipo -->
-    <div class="modal fade" id="equipoDetalleModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="equipoDetalleModalTitle">Detalles del Generador</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="equipoDetalleBody">
-                    <div class="d-flex justify-content-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando...</span>
-                        </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="card bg-success text-white h-100">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-check-circle fa-2x me-3"></i>
+                    <div>
+                      <h5 class="card-title mb-0">Oper.</h5>
+                      <h2 id="equipos-operativos">0</h2>
                     </div>
+                  </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" id="programarMantenimientoBtn">Programar Mantenimiento</button>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="card bg-warning text-white h-100">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
+                    <div>
+                      <h5 class="card-title mb-0">Alerta</h5>
+                      <h2 id="equipos-alerta">0</h2>
+                    </div>
+                  </div>
                 </div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <div class="card bg-danger text-white h-100">
+                  <div class="card-body d-flex align-items-center">
+                    <i class="fas fa-times-circle fa-2x me-3"></i>
+                    <div>
+                      <h5 class="card-title mb-0">Crít.</h5>
+                      <h2 id="equipos-criticos">0</h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Modal para nuevo mantenimiento -->
-    <div class="modal fade" id="nuevoMantenimientoModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Programar Mantenimiento</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="card mb-4">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Lista</h5>
+              </div>
+              <div class="card-body" id="generadores-container">
+                <div class="d-flex justify-content-center">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
                 </div>
-                <div class="modal-body">
-                    <form id="nuevoMantenimientoForm">
-                        <div class="mb-3">
-                            <label for="mantenimiento-equipo" class="form-label">Equipo</label>
-                            <select class="form-select" id="mantenimiento-equipo" required>
-                                <option value="">Seleccionar equipo...</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mantenimiento-tipo" class="form-label">Tipo de Mantenimiento</label>
-                            <select class="form-select" id="mantenimiento-tipo" required>
-                                <option value="Preventivo">Preventivo</option>
-                                <option value="Correctivo">Correctivo</option>
-                                <option value="Predictivo">Predictivo</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mantenimiento-fecha" class="form-label">Fecha Programada</label>
-                            <input type="date" class="form-control" id="mantenimiento-fecha" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mantenimiento-descripcion" class="form-label">Descripción</label>
-                            <textarea class="form-control" id="mantenimiento-descripcion" rows="3"></textarea>
-                        </div>
-                    </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mantenimientos -->
+          <div class="tab-pane fade" id="mantenimientos-tab">
+            <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+              <h1 class="h2">Mantenimientos</h1>
+              <div class="btn-toolbar">
+                <button class="btn btn-primary" id="nuevo-mantenimiento">
+                  <i class="fas fa-plus me-1"></i> Nuevo
+                </button>
+              </div>
+            </div>
+            <div class="card mb-4">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Calendario</h5>
+              </div>
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <div class="input-group">
+                      <span class="input-group-text">Mes</span>
+                      <input type="month" id="filtro-mes" class="form-control">
+                      <button id="aplicar-filtro" class="btn btn-outline-secondary" type="button">Aplicar</button>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-check form-check-inline">
+                      <input type="checkbox" id="mostrar-completados" class="form-check-input" checked>
+                      <label for="mostrar-completados" class="form-check-label">Completados</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input type="checkbox" id="mostrar-pendientes" class="form-check-input" checked>
+                      <label for="mostrar-pendientes" class="form-check-label">Pendientes</label>
+                    </div>
+                  </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="guardarMantenimientoBtn">Guardar</button>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Fecha</th>
+                        <th>Equipo</th>
+                        <th>Cliente</th>
+                        <th>Tipo</th>
+                        <th>Estado</th>
+                        <th>Acc.</th>
+                      </tr>
+                    </thead>
+                    <tbody id="mantenimientos-lista">
+                      <tr>
+                        <td colspan="6" class="text-center">Cargando...</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
+              </div>
             </div>
-        </div>
-    </div>
+          </div>
 
-    <!-- Toast notification system -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto" id="toastTitle">Notificación</strong>
-                <small id="toastTime">Ahora</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          <!-- Estadísticas -->
+          <div class="tab-pane fade" id="estadisticas-tab">
+            <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+              <h1 class="h2">Estadísticas</h1>
             </div>
-            <div class="toast-body" id="toastMessage">
-                Hello, world! This is a toast message.
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                  <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Horas/mes</h5>
+                  </div>
+                  <div class="card-body">
+                    <canvas id="horasChart"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                  <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Mantenimientos</h5>
+                  </div>
+                  <div class="card-body">
+                    <canvas id="mantenimientosChart"></canvas>
+                  </div>
+                </div>
+              </div>
             </div>
-        </div>
-    </div>
+            <div class="row">
+              <div class="col-md-12 mb-4">
+                <div class="card">
+                  <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Atención</h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Equipo</th>
+                            <th>Cliente</th>
+                            <th>Horómetro</th>
+                            <th>Horas</th>
+                            <th>Estado</th>
+                          </tr>
+                        </thead>
+                        <tbody id="equipos-atencion">
+                          <tr>
+                            <td colspan="5" class="text-center">Cargando...</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <!-- Loading Indicator -->
-    <div id="loadingIndicator" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
-        <div class="text-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
-            <p class="mt-3">Cargando dashboard...</p>
+          <!-- Usuarios (Admins) -->
+          <div class="tab-pane fade" id="usuarios-tab">
+            <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+              <h1 class="h2">Usuarios</h1>
+              <div class="btn-toolbar">
+                <button class="btn btn-primary" id="nuevo-usuario">
+                  <i class="fas fa-user-plus me-1"></i> Nuevo
+                </button>
+              </div>
+            </div>
+            <div class="card mb-4">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Lista</h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Acc.</th>
+                      </tr>
+                    </thead>
+                    <tbody id="usuarios-lista">
+                      <tr>
+                        <td colspan="5" class="text-center">Cargando...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </main>
     </div>
+  </div>
 
-    <!-- Toast Container for Notifications -->
-    <div id="toast-container" class="position-fixed top
+  <!-- Modal: Detalles del Equipo -->
+  <div class="modal fade" id="equipoDetalleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="equipoDetalleModalTitle" class="modal-title">Detalles</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body" id="equipoDetalleBody">
+          <div class="d-flex justify-content-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button id="programarMantenimientoBtn" class="btn btn-primary" type="button">Programar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Nuevo Mantenimiento -->
+  <div class="modal fade" id="nuevoMantenimientoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Programar Mantenimiento</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="nuevoMantenimientoForm">
+            <div class="mb-3">
+              <label for="mantenimiento-equipo" class="form-label">Equipo</label>
+              <select id="mantenimiento-equipo" class="form-select" required>
+                <option value="">Selecciona...</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="mantenimiento-tipo" class="form-label">Tipo</label>
+              <select id="mantenimiento-tipo" class="form-select" required>
+                <option value="Preventivo">Preventivo</option>
+                <option value="Correctivo">Correctivo</option>
+                <option value="Predictivo">Predictivo</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="mantenimiento-fecha" class="form-label">Fecha</label>
+              <input id="mantenimiento-fecha" type="date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="mantenimiento-descripcion" class="form-label">Descripción</label>
+              <textarea id="mantenimiento-descripcion" class="form-control" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button id="guardarMantenimientoBtn" class="btn btn-primary" type="button">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong id="toastTitle" class="me-auto">Notificación</strong>
+        <small id="toastTime">Ahora</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+      </div>
+      <div id="toastMessage" class="toast-body">Mensaje</div>
+    </div>
+  </div>
+
+  <!-- Loading Indicator -->
+  <div id="loadingIndicator" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style="z-index: 1050;">
+    <div class="text-center">
+      <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+      <p class="mt-3">Cargando...</p>
+    </div>
+  </div>
+</body>
+</html>
