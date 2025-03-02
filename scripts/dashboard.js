@@ -81,7 +81,7 @@ async function loadEquipos() {
         let criticos = 0;
         
         equipos.forEach(equipo => {
-            // This is just an example - adjust based on your business logic
+            // This is just an example - adjust based on your business logic.
             if (equipo.horometro < 400) {
                 operativos++;
             } else if (equipo.horometro < 600) {
