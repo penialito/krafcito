@@ -1,6 +1,7 @@
-// Fix Supabase initialization in auth.js
+// Enhanced version of auth.js with proper initialization and login handling
 
-const initializeSupabase = async () => {
+// Make initializeSupabase available globally
+window.initializeSupabase = async () => {
     try {
         // Check if supabase is available
         if (typeof supabase === 'undefined' || !supabase.createClient) {
@@ -29,3 +30,102 @@ const initializeSupabase = async () => {
         throw error;
     }
 };
+
+// Handle login functionality
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Initialize Supabase
+        const supabaseClient = await window.initializeSupabase();
+        
+        // Check if we're already logged in
+        const { data } = await supabaseClient.auth.getSession();
+        if (data.session) {
+            // Already logged in, redirect to dashboard
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        
+        // Set up login form submission
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                
+                // Show loading state
+                const submitButton = loginForm.querySelector('button[type="submit"]');
+                const originalButtonText = submitButton.innerHTML;
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...';
+                
+                try {
+                    const email = document.getElementById('email').value;
+                    const password = document.getElementById('password').value;
+                    
+                    // Attempt login
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+                    
+                    if (error) {
+                        throw error;
+                    }
+                    
+                    // Successful login
+                    console.log('Login successful!', data);
+                    
+                    // Redirect to dashboard
+                    window.location.href = 'dashboard.html';
+                } catch (error) {
+                    console.error('Login error:', error);
+                    
+                    // Create or update error message
+                    let errorElement = document.getElementById('login-error');
+                    if (!errorElement) {
+                        errorElement = document.createElement('div');
+                        errorElement.id = 'login-error';
+                        errorElement.className = 'alert alert-danger mt-3';
+                        loginForm.appendChild(errorElement);
+                    }
+                    
+                    errorElement.textContent = error.message || 'Error de inicio de sesión. Verifique sus credenciales.';
+                    
+                    // Reset button
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonText;
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Authentication setup error:', error);
+    }
+});
+
+// Add password recovery functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const recoveryLink = document.querySelector('a[href="#recovery"]');
+    if (recoveryLink) {
+        recoveryLink.addEventListener('click', async (event) => {
+            event.preventDefault();
+            
+            const email = prompt('Ingrese su correo electrónico para recuperar su contraseña:');
+            if (!email) return;
+            
+            try {
+                const supabaseClient = await window.initializeSupabase();
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/reset-password.html',
+                });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                alert('Si su correo está registrado, recibirá un enlace para restablecer su contraseña.');
+            } catch (error) {
+                console.error('Password recovery error:', error);
+                alert(`Error: ${error.message || 'No se pudo procesar la solicitud'}`);
+            }
+        });
+    }
+});
