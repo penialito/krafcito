@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Si su correo está registrado, recibirá un enlace para restablecer su contraseña.');
             } catch (error) {
                 console.error('Password recovery error:', error);
-                alert(`Error: ${error.message || 'No se pudo procesar la solicitud'}`);
+                alert(`Error: ${error.message || 'No se pudo procesar la solicitud.'}`);
             }
         });
     }
