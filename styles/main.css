@@ -310,3 +310,94 @@ body {
     height: 1em;
     margin-bottom: 0.5rem;
 }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .service-card {
+        padding: 1rem;
+    }
+
+    .service-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .btn-primary, .btn-gradient {
+        padding: 0.6rem 1.5rem;
+    }
+
+    .stats-card, .equipment-card {
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-content {
+        padding: 1rem;
+    }
+
+    .modal-header, .modal-footer {
+        padding: 0.75rem;
+    }
+
+    .toast {
+        min-width: 200px;
+    }
+
+    .form-control, .form-label {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero {
+        padding: 4rem 0;
+    }
+
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 0.875rem;
+    }
+
+    .service-card {
+        padding: 0.5rem;
+    }
+
+    .service-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .btn-primary, .btn-gradient {
+        padding: 0.4rem 1rem;
+    }
+
+    .stats-card, .equipment-card {
+        margin-bottom: 1rem;
+    }
+
+    .modal-content {
+        padding: 0.5rem;
+    }
+
+    .modal-header, .modal-footer {
+        padding: 0.5rem;
+    }
+
+    .toast {
+        min-width: 150px;
+    }
+
+    .form-control, .form-label {
+        font-size: 0.75rem;
+    }
+}
