@@ -1,3 +1,7 @@
+// pagination at the top
+let currentPage = 1;
+const pageSize = 20;
+
 // Check authentication and update UI accordingly
 async function checkAuth() {
     try {
@@ -31,18 +35,23 @@ async function checkAuth() {
     }
 }
 
-// Load equipos data and update counters & cards
-async function loadEquipos() {
+// Load equipos data and update counters & cards, modified to support server-side pagination
+async function loadEquipos(page = 1) {
     try {
         const client = await window.initializeSupabase();
-        const { data: equipos, error } = await client
+        const from = (page - 1) * pageSize;
+        const to = from + pageSize - 1;
+
+        const { data: equipos, error, count } = await client
             .from('equipos')
-            .select('id, nombre_interno, marca_genset, modelo_genset, serie_genset, horometro, potencia_kw, cliente_id, clientes(nombre, rut)')
-            .order('id', { ascending: true });
+            .select('id, nombre_interno, marca_genset, modelo_genset, serie_genset, horometro, potencia_kw, cliente_id, clientes(nombre, rut)', { count: 'exact' })
+            .order('id', { ascending: true })
+            .range(from, to);
+
         if (error) throw error;
 
         // Update counters
-        document.getElementById('total-equipos').textContent = equipos.length;
+        document.getElementById('total-equipos').textContent = count;
         const { operativos, alertas, criticos } = equipos.reduce(
             (acc, equipo) => {
                 if (equipo.horometro < 400) acc.operativos++;
@@ -57,9 +66,29 @@ async function loadEquipos() {
         document.getElementById('equipos-criticos').textContent = criticos;
 
         displayEquipos(equipos);
+        updatePaginationControls(count);
+
     } catch (err) {
         console.error('Error loading equipment:', err);
         showToast('Error', `No se pudieron cargar los equipos: ${err.message}`, 'error');
+    }
+}
+
+// Function to update pagination buttons
+function updatePaginationControls(totalItems) {
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const paginationContainer = document.getElementById('pagination-container');
+    paginationContainer.innerHTML = '';
+
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement('button');
+        btn.className = `btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-outline-primary'} m-1`;
+        btn.textContent = i;
+        btn.onclick = () => {
+            currentPage = i;
+            loadEquipos(currentPage);
+        };
+        paginationContainer.appendChild(btn);
     }
 }
 
@@ -262,13 +291,13 @@ function displayEquipoDetalle(equipo) {
     equipoDetalleModal.show();
 }
 
-// Initialize the dashboard application
+// Initialize the dashboard application, edited for loadequipos pagination
 document.addEventListener('DOMContentLoaded', async () => {
     const loadingIndicator = document.getElementById('loadingIndicator');
     loadingIndicator.style.display = 'flex';
     try {
         if (!(await checkAuth())) return;
-        await Promise.all([loadEquipos(), loadMantenimientos(), loadEstadisticas()]);
+        await Promise.all([loadEquipos(currentPage), loadMantenimientos(), loadEstadisticas()]);
         setupEventListeners();
     } catch (err) {
         console.error('Initialization error:', err);
